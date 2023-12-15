@@ -5,3 +5,13 @@ All notable changes to the "vstunes" extension will be documented in this file.
 ## [1.0.0]
 
 -   Initial release
+
+## [1.0.1]
+
+<!-- **🚀 New Features** -->
+
+**🐛 Bug Fixes**
+
+-   Fixed song stopping abruptly: Addressed the issue where the song would unexpectedly stop after a few minutes. Now, the song continues playing seamlessly until the end or user interaction.
+
+-   Improved error handling: Enhanced error handling to better report any issues encountered during search or playback.

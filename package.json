@@ -4,7 +4,7 @@
   "publisher": "tharunbirla",
   "repository": "https://github.com/tharunbirla/vsTunes",
   "description": "Elevate your coding experience with VSTune, a Visual Studio Code extension that lets you search and play songs from YouTube right in your editor.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "icon": "images/icon.png",
   "engines": {

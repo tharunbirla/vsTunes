@@ -7,6 +7,8 @@ let playPauseButton;
 let titleText;
 let titleTimer;
 
+let togglePlayPauseCommand;
+
 async function activate(context) {
     let disposable = vscode.commands.registerCommand('vstunes.searchTunes', async function () {
         const searchQuery = await vscode.window.showInputBox({
@@ -35,6 +37,11 @@ async function activate(context) {
                         if (selectedVideoId) {
                             const audioUrl = `https://vid.puffyan.us/latest_version?id=${selectedVideoId}&itag=140`;
 
+                            // Dispose of the existing command if it exists
+                            if (togglePlayPauseCommand) {
+                                togglePlayPauseCommand.dispose();
+                            }
+
                             // Add button to the status bar for controlling playback
                             playPauseButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 99);
                             playPauseButton.text = '$(debug-pause)';
@@ -49,38 +56,42 @@ async function activate(context) {
                             titleText.show();
 
                             // Command for toggling play/pause
-                            context.subscriptions.push(vscode.commands.registerCommand('vstunes.togglePlayPause', () => {
+                            togglePlayPauseCommand = vscode.commands.registerCommand('vstunes.togglePlayPause', () => {
                                 if (mplayerProcess) {
                                     mplayerProcess.stdin.write(' ');
-                                    updatePlayPauseButton()
+                                    updatePlayPauseButton();
                                 }
-                            }));
+                            });
+
+                            context.subscriptions.push(togglePlayPauseCommand);
 
                             function updatePlayPauseButton() {
                                 if (playPauseButton) {
-                                  if (playPauseButton.text === '$(debug-pause)') {
-                                    playPauseButton.text = '$(play)';
-                                  } else {
-                                    playPauseButton.text = '$(debug-pause)';
-                                  }
+                                    if (playPauseButton.text === '$(debug-pause)') {
+                                        playPauseButton.text = '$(play)';
+                                    } else {
+                                        playPauseButton.text = '$(debug-pause)';
+                                    }
                                 }
-                            }                              
-
+                            }
+                            
                             // Start mplayer process
-                            mplayerProcess = spawn('mplayer', [audioUrl], {
+                            mplayerProcess = spawn('mplayer', ['-cache', '9999', '-really-quiet', audioUrl], {
                                 detached: true,
                                 stdio: 'pipe',
                             });
 
                             // Handle mplayer process exit
-                            mplayerProcess.on('exit', (code) => {
-                                if (code !== null) {
-                                    vscode.window.showErrorMessage('Error while playing audio. Please check your mplayer installation.');
-                                }
+                            mplayerProcess.on('exit', () => {
                                 mplayerProcess = null;
                                 playPauseButton.hide();
                                 titleText.hide();
                                 clearInterval(titleTimer);
+                            });
+
+                            // Listen for the end event to change the button to play when the song ends
+                            mplayerProcess.on('end', () => {
+                                updatePlayPauseButton();
                             });
 
                             playPauseButton.show();
@@ -115,6 +126,11 @@ function deactivate() {
         mplayerProcess.stdin.write('q\n');
     }
     clearInterval(titleTimer);
+
+    // Dispose of the command when deactivating the extension
+    if (togglePlayPauseCommand) {
+        togglePlayPauseCommand.dispose();
+    }
 }
 
 module.exports = {

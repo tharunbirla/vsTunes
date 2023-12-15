@@ -28,13 +28,14 @@
 
 -   **vsTune: Search Tunes**: Open the search box to find and play tunes.
 
-<!-- ## Known Issues
+## Known Issues
 
--   ... -->
+-   Plays multiple audio at the same time
 
 ## Improvements
 
 -   Add to playlist option
+-   Enable user to change invidious server
 
 ## Release Notes
 
