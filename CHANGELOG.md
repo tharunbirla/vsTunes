@@ -22,4 +22,6 @@ All notable changes to the "vstunes" extension will be documented in this file.
 
 -   Implement user-configurable Invidious server: Users can now choose their preferred Invidious instance for music playback, enhancing flexibility and privacy.
 
-<!-- **🐛 Bug Fixes** -->
+**🐛 Bug Fixes**
+
+-   Fixed "new song while playing" crash: This resolved issues encountered when attempting to initiate playback of a new song while an existing song was already playing.

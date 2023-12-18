@@ -38,6 +38,16 @@ async function activate(context) {
                         if (selectedVideoId) {
                             const audioUrl = `${serverUrl}/latest_version?id=${selectedVideoId}&itag=140`;
 
+                            // Stop the currently playing song if running
+                            if (mplayerProcess) {
+                                mplayerProcess.stdin.write('quit\n');
+                                togglePlayPauseCommand.dispose();
+                                clearInterval(titleTimer);
+                                mplayerProcess = null;
+                                playPauseButton.dispose();
+                                titleText.dispose();
+                            }
+
                             // Add button to the status bar for controlling playback
                             playPauseButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 99);
                             playPauseButton.text = '$(debug-pause)';
@@ -104,7 +114,7 @@ async function activate(context) {
                 }
             } catch (error) {
                 console.error('Error fetching search results:', error.message);
-                vscode.window.showErrorMessage('Error fetching search results. Please try again later.');
+                vscode.window.showErrorMessage(error.message);
             }
         }
     });

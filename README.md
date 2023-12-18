@@ -36,7 +36,7 @@
 
 -   Add to playlist option
 -   ~Enable user to change invidious server~
--   Fix error when new song is played while another song is playing
+-   ~Fix error when new song is played while another song is playing~
 
 ## Release Notes
 
