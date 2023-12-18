@@ -6,10 +6,12 @@ let mplayerProcess;
 let playPauseButton;
 let titleText;
 let titleTimer;
-
 let togglePlayPauseCommand;
 
 async function activate(context) {
+    // Get the configured Invidious server URL
+    let serverUrl = vscode.workspace.getConfiguration().get('vstunes.invidiousServer');
+
     let disposable = vscode.commands.registerCommand('vstunes.searchTunes', async function () {
         const searchQuery = await vscode.window.showInputBox({
             placeHolder: 'Enter your search query',
@@ -18,9 +20,8 @@ async function activate(context) {
 
         if (searchQuery) {
             try {
-                const response = await axios.get(`https://vid.puffyan.us/api/v1/search?q=${encodeURIComponent(searchQuery)}&pretty=1`);
+                const response = await axios.get(`${serverUrl}/api/v1/search?q=${encodeURIComponent(searchQuery)}&pretty=1`);
 
-                // Extract titles and videoIds from the response
                 const results = response.data;
                 const titles = results.map(result => result.title);
                 const videoIds = results.map(result => result.videoId);
@@ -35,12 +36,7 @@ async function activate(context) {
                         const selectedVideoId = videoIds[selectedVideoIndex];
 
                         if (selectedVideoId) {
-                            const audioUrl = `https://vid.puffyan.us/latest_version?id=${selectedVideoId}&itag=140`;
-
-                            // Dispose of the existing command if it exists
-                            if (togglePlayPauseCommand) {
-                                togglePlayPauseCommand.dispose();
-                            }
+                            const audioUrl = `${serverUrl}/latest_version?id=${selectedVideoId}&itag=140`;
 
                             // Add button to the status bar for controlling playback
                             playPauseButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 99);
@@ -74,7 +70,6 @@ async function activate(context) {
                                     }
                                 }
                             }
-                            
                             // Start mplayer process
                             mplayerProcess = spawn('mplayer', ['-cache', '9999', '-really-quiet', audioUrl], {
                                 detached: true,
@@ -83,9 +78,6 @@ async function activate(context) {
 
                             // Handle mplayer process exit
                             mplayerProcess.on('exit', () => {
-                                mplayerProcess = null;
-                                playPauseButton.hide();
-                                titleText.hide();
                                 clearInterval(titleTimer);
                             });
 
@@ -123,9 +115,9 @@ async function activate(context) {
 function deactivate() {
     // Terminate the mplayer process when deactivating the extension
     if (mplayerProcess) {
-        mplayerProcess.stdin.write('q\n');
+        mplayerProcess.stdin.write('quit');
     }
-    clearInterval(titleTimer);
+    
 
     // Dispose of the command when deactivating the extension
     if (togglePlayPauseCommand) {

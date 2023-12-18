@@ -15,3 +15,11 @@ All notable changes to the "vstunes" extension will be documented in this file.
 -   Fixed song stopping abruptly: Addressed the issue where the song would unexpectedly stop after a few minutes. Now, the song continues playing seamlessly until the end or user interaction.
 
 -   Improved error handling: Enhanced error handling to better report any issues encountered during search or playback.
+
+## [1.1.1]
+
+**🚀 New Features**
+
+-   Implement user-configurable Invidious server: Users can now choose their preferred Invidious instance for music playback, enhancing flexibility and privacy.
+
+<!-- **🐛 Bug Fixes** -->
